@@ -1,0 +1,52 @@
+#include<stdio.h>
+#include<string.h>
+#include<ctype.h>
+int main()
+{
+	char text[100],key[26];
+	int choice;
+	printf("enter message:");
+	gets(text);
+	printf("enter a key:");
+	gets(key);
+	printf("enter choice: 1.encryption 2.decryption:");
+	scanf("%d",&choice);
+	switch(choice){
+		case 1:
+			{
+			char ciphertext[100];
+    for (int i = 0; text[i] != '\0'; i++) {
+        if (isalpha(text[i])) {
+            char base = isupper(text[i]) ? 'A' : 'a';
+            ciphertext[i] = key[text[i] - base]; 
+        } else {
+            ciphertext[i] = text[i];
+        }
+    }
+    ciphertext[strlen(text)] = '\0';
+    printf("Encrypted text: %s\n", ciphertext);
+    break;
+	}
+	case 2:
+		{
+		char plaintext[100];
+    char reverseKey[26];
+    for (int i = 0; i < 26; i++) {
+        reverseKey[key[i] - 'A'] = 'A' + i;
+    }
+
+    for (int i = 0; text[i] != '\0'; i++) {
+        if (isalpha(text[i])) {
+            char base = isupper(text[i]) ? 'A' : 'a';
+            plaintext[i] = reverseKey[text[i] - base]; 
+        } else {
+            plaintext[i] = text[i];
+        }
+    }
+    plaintext[strlen(text)] = '\0';
+    printf("Decrypted text: %s\n", plaintext);
+}
+default:
+	printf("invalid choice");
+}
+}
