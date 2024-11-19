@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define SIZE 5
+void generate_matrix(char *key, char matrix[SIZE][SIZE]) {
+    int used[26] = {0};
+    int i, j, k = 0;
+    for (i = 0; key[i] != '\0'; i++) {
+        char letter = toupper(key[i]);
+        if (letter == 'J') letter = 'I';
+        if (letter >= 'A' && letter <= 'Z' && !used[letter - 'A']) {
+            used[letter - 'A'] = 1;
+            matrix[k / SIZE][k % SIZE] = letter;
+            k++;
+        }
+    }
+    for (i = 0; i < 26; i++) {
+        if (!used[i]) {
+            matrix[k / SIZE][k % SIZE] = 'A' + i;
+            k++;
+        }
+    }
+}
+void find_position(char letter, char matrix[SIZE][SIZE], int *row, int *col) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (matrix[i][j] == letter) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
+void decrypt(char *ciphertext, char matrix[SIZE][SIZE], char *plaintext) {
+    int len = strlen(ciphertext);
+    int i, row1, col1, row2, col2;
+    for (i = 0; i < len; i += 2) {
+        char first = toupper(ciphertext[i]);
+        char second = toupper(ciphertext[i + 1]);
+        find_position(first, matrix, &row1, &col1);
+        find_position(second, matrix, &row2, &col2);
+
+        if (row1 == row2) {
+            plaintext[i] = matrix[row1][(col1 - 1 + SIZE) % SIZE];
+            plaintext[i + 1] = matrix[row2][(col2 - 1 + SIZE) % SIZE];
+        } else if (col1 == col2) {
+            plaintext[i] = matrix[(row1 - 1 + SIZE) % SIZE][col1];
+            plaintext[i + 1] = matrix[(row2 - 1 + SIZE) % SIZE][col2];
+        } else {
+            plaintext[i] = matrix[row1][col2];
+            plaintext[i + 1] = matrix[row2][col1];
+        }
+    }
+    plaintext[len] = '\0';
+}
+int main() {
+    char matrix[SIZE][SIZE];
+    char ciphertext[] = "KXJEY UREBE ZWEHE WRYTU HEYFS KREHE GOYFI WTTTU OLKSY CAJPO BOTEI ZONTX BYBNT GONEY CUZWR GDSON SXBOU YWRHE BAAHY USEDQ";
+    char plaintext[100];
+    char keyword[] = "CIPHER";
+printf("ciphar text: %s\n", ciphertext);
+    generate_matrix(keyword, matrix);
+    decrypt(ciphertext, matrix, plaintext);
+    printf("Decrypted text: %s\n", plaintext);
+    return 0;
+}
