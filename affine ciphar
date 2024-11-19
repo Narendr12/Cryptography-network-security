@@ -53,10 +53,17 @@ void affineDecrypt(char *text, int a, int b, char *decryptedText) {
 }
 
 int main() {
-    char plainText[] = "Nice to meet you!";
+    char plainText[100];
     char encryptedText[100];
     char decryptedText[100];
-    int a = 5, b = 8;
+    int a, b;
+    printf("Enter the plaintext: ");
+    gets(plainText);
+    plainText[strcspn(plainText, "\n")] = '\0';
+    printf("Enter the key 'a' (must be coprime with 26): ");
+    scanf("%d", &a);
+    printf("Enter the key 'b': ");
+    scanf("%d", &b);
     affineEncrypt(plainText, a, b, encryptedText);
     printf("Encrypted text: %s\n", encryptedText);
     affineDecrypt(encryptedText, a, b, decryptedText);
