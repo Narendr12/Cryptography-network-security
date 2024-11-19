@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <string.h>
+void decryptSubstitution(char *ciphertext, char *key, char *decryptedText) {
+    int i = 0;
+    while (ciphertext[i] != '\0') {
+        char ch = ciphertext[i];
+        if (ch >= 32 && ch <= 126) { // Printable ASCII range
+            decryptedText[i] = key[ch - 32];  // Map based on ASCII value
+        } else {
+            decryptedText[i] = ch;  // Non-alphabetic characters stay the same
+        }
+        i++;
+    }
+    decryptedText[i] = '\0';
+}
+int main() {
+    char ciphertext[] = "53‡‡†305))6*;4826)4‡.)4‡);806*;48†8¶60))85;;]8*;:‡*8†83...";
+    char key[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+    char decryptedText[1024];
+    decryptSubstitution(ciphertext, key, decryptedText);
+    printf("Decrypted text: %s\n", decryptedText);
+    return 0;
+}
