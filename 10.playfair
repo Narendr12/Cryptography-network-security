@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+char matrix[5][5] = {
+    {'M', 'F', 'H', 'I', 'K'},
+    {'U', 'N', 'O', 'P', 'Q'},
+    {'Z', 'V', 'W', 'X', 'Y'},
+    {'E', 'L', 'A', 'R', 'G'},
+    {'D', 'S', 'T', 'B', 'C'}
+};
+void preprocessMessage(char *message, char *processed) {
+    int j = 0;
+    for (int i = 0; i < strlen(message); i++) {
+        if (isalpha(message[i])) {
+            char ch = toupper(message[i]);
+            if (ch == 'J') {
+                ch = 'I';
+            }
+            processed[j++] = ch;
+        }
+    }
+    processed[j] = '\0';
+}
+void createDigraphs(char *message, char digraphs[][2], int *digraphCount) {
+    int len = strlen(message);
+    int j = 0;
+    *digraphCount = 0;
+    for (int i = 0; i < len; i++) {
+        if (i + 1 < len && message[i] != message[i + 1]) {
+            digraphs[j][0] = message[i];
+            digraphs[j][1] = message[i + 1];
+            i++;
+        } else {
+            digraphs[j][0] = message[i];
+            digraphs[j][1] = 'X'; 
+        }
+        j++;
+        (*digraphCount)++;
+    }
+}
+void findPosition(char ch, int *row, int *col) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (matrix[i][j] == ch) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
+void encryptPlayfair(char digraphs[][2], int digraphCount, char *ciphertext) {
+    int row1, col1, row2, col2;
+    for (int i = 0; i < digraphCount; i++) {
+        findPosition(digraphs[i][0], &row1, &col1);
+        findPosition(digraphs[i][1], &row2, &col2);
+        if (row1 == row2) {
+            ciphertext[2 * i] = matrix[row1][(col1 + 1) % 5];
+            ciphertext[2 * i + 1] = matrix[row2][(col2 + 1) % 5];
+        }
+        else if (col1 == col2) {
+            ciphertext[2 * i] = matrix[(row1 + 1) % 5][col1];
+            ciphertext[2 * i + 1] = matrix[(row2 + 1) % 5][col2];
+        }
+        else {
+            ciphertext[2 * i] = matrix[row1][col2];
+            ciphertext[2 * i + 1] = matrix[row2][col1];
+        }
+    }
+    ciphertext[2 * digraphCount] = '\0';
+}
+int main() {
+    char message[] = "Must see you over Cadogan West. Coming at once";
+    char processedMessage[100], digraphs[50][2], ciphertext[100];
+    int digraphCount;
+
+    preprocessMessage(message, processedMessage);
+    createDigraphs(processedMessage, digraphs, &digraphCount);
+    encryptPlayfair(digraphs, digraphCount, ciphertext);
+
+    printf("Original Message: %s\n", message);
+    printf("Encrypted Message: %s\n", ciphertext);
+
+    return 0;
+}
